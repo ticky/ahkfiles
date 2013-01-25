@@ -4,66 +4,72 @@
 #MaxHotkeysPerInterval 100 ;Avoid warning when mouse wheel turned very fast
 
 ;Autoexecute code
-CoordMode, Mouse, Screen
 MinLinesPerNotch := 1
-MaxLinesPerNotch := 5
+MaxLinesPerNotch := 6
 AccelerationThreshold := 100
-AccelerationType := "L" ;Change to "P" for parabolic acceleration
+AccelerationType := "P" ;Change to "P" for parabolic acceleration
 StutterThreshold := 10
+NaturalScrolling := true ; Use "Natural" scrolling (like touch devices)
+EmulateStandardWScrollLock := true ; Emulate default Windows scrolling when Scroll Lock is on (3-line, traditional direction)
 
 ;Function definitions
 
-;See above for details on parameters
-FocuslessScroll(MinLinesPerNotch, MaxLinesPerNotch, AccelerationThreshold, AccelerationType, StutterThreshold)
+;See above for details
+FocuslessScroll(MinLinesPerNotch, MaxLinesPerNotch, AccelerationThreshold, AccelerationType, StutterThreshold, NaturalScrolling, EmulateStandardWScrollLock)
 {
-	Critical ;Buffer all missed scrollwheel input to prevent missing notches
 	SetBatchLines, -1 ;Run as fast as possible
+	CoordMode, Mouse, Screen ;All coords relative to screen
+
+	If(GetKeyState("ScrollLock", "T")) AND (EmulateStandardWScrollLock)
+    {
+        MinLinesPerNotch := 3
+        MaxLinesPerNotch := 3
+        NaturalScrolling := false
+    }
 
 	;Stutter filter: Prevent stutter caused by cheap mice by ignoring successive WheelUp/WheelDown events that occur to close together.
 	If(A_TimeSincePriorHotkey < StutterThreshold) ;Quickest succession time in ms
 		If(A_PriorHotkey = "WheelUp" Or A_PriorHotkey ="WheelDown")
 			Return
 
-	MouseGetPos, m_x, m_y
-	m_x &= 0xFFFF
+	MouseGetPos, m_x, m_y,, ControlClass2, 2
+	ControlClass1 := DllCall( "WindowFromPoint", "int64", (m_y << 32) | (m_x & 0xFFFFFFFF), "Ptr") ;32-bit and 64-bit support
 
-	MouseGetPos,,,, ControlClass2, 2
-	MouseGetPos,,,, ControlClass3, 3
-
-	ControlClass1 := DllCall("WindowFromPoint", "int", m_x, "int", m_y)
-	;64-bit systems use this line
-	;ControlClass1 := DllCall( "WindowFromPoint", "int64", m_x | (m_y << 32), "Ptr")
-
-	lParam := (m_y << 16) | m_x
+	lParam := (m_y << 16) | (m_x & 0x0000FFFF)
 	wParam := (120 << 16) ;Wheel delta is 120, as defined by MicroSoft
+
+    If(NaturalScrolling) ; hack to invert for natural scrolling
+        wParam := -wParam
 
 	;Detect WheelDown event
 	If(A_ThisHotkey = "WheelDown" Or A_ThisHotkey = "^WheelDown" Or A_ThisHotkey = "+WheelDown" Or A_ThisHotkey = "*WheelDown")
 		wParam := -wParam ;If scrolling down, invert scroll direction
-	
+
 	;Detect modifer keys held down (only Shift and Control work)
 	If(GetKeyState("Shift","p"))
 		wParam := wParam | 0x4
 	If(GetKeyState("Ctrl","p"))
 		wParam := wParam | 0x8
 
-	;If you don't need scroll acceleration, you can simply remove the LinesPerNotch() function def and set Lines := 1. Additionally you will want to strip out all the related unused function parameters.
+	;Adjust lines per notch according to scrolling speed
 	Lines := LinesPerNotch(MinLinesPerNotch, MaxLinesPerNotch, AccelerationThreshold, AccelerationType)
 
-	;Run this loop several times to create the impression of faster scrolling
-	Loop, %Lines%
+	If(ControlClass1 != ControlClass2)
 	{
-		If(ControlClass2 = "")
-			SendMessage, 0x20A, wParam, lParam,, ahk_id %ControlClass1%
-		Else
+		Loop %Lines%
 		{
+			SendMessage, 0x20A, wParam, lParam,, ahk_id %ControlClass1%
 			SendMessage, 0x20A, wParam, lParam,, ahk_id %ControlClass2%
-			If(ControlClass2 != ControlClass3)
-				SendMessage, 0x20A, wParam, lParam,, ahk_id %ControlClass3%
 		}
+	}
+	Else ;Avoid using Loop when not needed (most normal controls). Greately improves momentum problem!
+	{
+		SendMessage, 0x20A, wParam * Lines, lParam,, ahk_id %ControlClass1%
 	}
 }
 
+;All parameters are the same as the parameters of FocuslessScroll()
+;Return value: Returns the number of lines to be scrolled calculated from the current scroll speed.
 LinesPerNotch(MinLinesPerNotch, MaxLinesPerNotch, AccelerationThreshold, AccelerationType)
 {
 	T := A_TimeSincePriorHotkey
@@ -97,11 +103,15 @@ LinesPerNotch(MinLinesPerNotch, MaxLinesPerNotch, AccelerationThreshold, Acceler
 	Return Lines
 }
 
-;All hotkeys can use the same instance of FocuslessScroll(). No need to have separate calls unless each hotkey requires different parameters (e.g. you want to disable acceleration for Ctrl-WheelUp and Ctrl-WheelDown). If you want a single set of parameters for all scrollwheel actions, you can simply use *WheelUp:: and *WheelDown:: instead.
+;All hotkeys with the same parameters can use the same instance of FocuslessScroll(). No need to have separate calls unless each hotkey requires different parameters (e.g. you want to disable acceleration for Ctrl-WheelUp and Ctrl-WheelDown). If you want a single set of parameters for all scrollwheel actions, you can simply use *WheelUp:: and *WheelDown:: instead.
 
+#MaxThreadsPerHotkey 6 ;Adjust to taste. The lower the value, the lesser the momentum problem on certain smooth-scrolling GUI controls (e.g. AHK helpfile main pane, WordPad...), but also the lesser the acceleration feel. The good news is that this setting does no affect most controls, only those that exhibit the momentum problem. Nice.
+;Scroll with acceleration
 WheelUp::
-^WheelUp:: ;zooms in
-WheelDown::
-^WheelDown:: ;zoom out
-	FocuslessScroll(MinLinesPerNotch, MaxLinesPerNotch, AccelerationThreshold, AccelerationType, StutterThreshold)
-Return
+WheelDown::FocuslessScroll(MinLinesPerNotch, MaxLinesPerNotch, AccelerationThreshold, AccelerationType, StutterThreshold, NaturalScrolling, EmulateStandardWScrollLock)
+;Ctrl-Scroll zoom with no acceleration (MaxLinesPerNotch = MinLinesPerNotch).
+^WheelUp::
+^WheelDown::FocuslessScroll(MinLinesPerNotch, MinLinesPerNotch, AccelerationThreshold, AccelerationType, StutterThreshold, NaturalScrolling, EmulateStandardWScrollLock)
+;If you want zoom acceleration, replace above line with this:
+;FocuslessScroll(MinLinesPerNotch, MaxLinesPerNotch, AccelerationThreshold, AccelerationType, StutterThreshold, NaturalScrolling, EmulateStandardWScrollLock)
+#MaxThreadsPerHotkey 1 ;Restore AHK's default  value i.e. 1
