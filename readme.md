@@ -6,12 +6,12 @@ Generally written to avoid annoyances I find when using Windows.
 
 ## Features
 
-* Modified version of FocuslessScroll featuring "natural" scrolling
+* Modified version of FocuslessScroll, which allows you to scroll the window under the cursor and adds acceleration. This version has been modified to include "natural" (inverse) scrolling
 * Mac-like hotkeys for various common functions like sleeping the display, shutting down, rebooting
 * Media and volume keys modeled after Apple's keyboard layouts
 * iTunes metadata support (Incomplete at this stage)
-* 20% scaled Volume meter compatible with Vista and newer
-* Relatively convenient Scroll Lock toggle for most key overrides so it doesn't interrupt anything
+* Volume meter (showing the first 20% of the volume scale) compatible with Vista and newer
+* Relatively convenient Scroll Lock toggle for most key overrides (but not all hotkeys) so it doesn't interrupt anything
 
 ## Requirements
 
@@ -28,7 +28,7 @@ Generally written to avoid annoyances I find when using Windows.
 
 ## Key Mappings
 
-* `Scroll Lock`: Enable/Disable key overrides
+* `Scroll Lock`: Enable/Disable hoykeys, natural scrolling and acceleration
 
 NOTE: Shortcuts marked with an asterisk are _not_ disabled by `Scroll Lock`.
 
