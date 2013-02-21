@@ -16,6 +16,7 @@ Generally written to avoid annoyances I find when using Windows.
 ## Requirements
 
 * A Unicode version of Autohotkey_L (Current versions of Autohotkey seem to all "just work" but YMMV)
+* The [Vista Audio Control library](http://www.autohotkey.com/board/topic/21984-vista-audio-control-functions/)
 * Windows Vista, 7 or 8
 
 ## Setup

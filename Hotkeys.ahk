@@ -3,6 +3,27 @@
 ;;;; Geoff's Custom Hotkeys ;;;;
 ; These hotkeys and many functions are compiled from many sources all over the web.
 
+;;; Setting up Volume and Feedback GUI ;;;
+Gui, +ToolWindow -Caption +AlwaysOnTop +Disabled
+Gui, Color, 444444
+
+Gui, add, picture, vOutputPicture x57 y30, %A_WorkingDir%\headphone.png
+
+Gui, Font, cFFFFFF S14, Arial
+Gui, add, Text, vOutputBar center x0 w206 h34 y170, □□□□□□□□□□□□□□□□
+
+Gui, Font, cFFFFFF S18, Segoe UI
+Gui, add, Text, vOutputText center x0 w206 h34 y125, ???
+
+Gui, Show, H211 W206 Center NoActivate, Output
+WinSet, Region, 0-0 H211 W206 R30-30, Output
+WinSet, ExStyle, +0x20, Output
+
+SetTimer, VolumeFadeOutIteration, 1
+
+iterationsSinceVolumeTap = 60
+maxOpacity = 120
+
 ;;; MAC-STYLE SHORTCUTS ;;;
 ; These are shortcuts I've essentially lifted from my Mac, substituting F12 for the Eject key,
 ; and shifting other shortcuts over one key.
@@ -116,7 +137,6 @@ if GetKeyState("ScrollLock", "T")
 Else
 {
     Send, {Volume_Mute}
-    SoundPlay, %A_ScriptDir%\volume.wav
     VolumeToast()
 }
 return
@@ -130,7 +150,6 @@ if ( GetKeyState("ScrollLock", "T") )
 Else
 {
     Send, {Volume_Down}
-    SoundPlay, %A_ScriptDir%\volume.wav
     VolumeToast()
 }
 return
@@ -144,7 +163,6 @@ if ( GetKeyState("ScrollLock", "T") )
 Else
 {
     Send, {Volume_Up}
-    SoundPlay, %A_ScriptDir%\volume.wav
     VolumeToast()
 }
 return
@@ -192,11 +210,40 @@ return
 ; Need to detect output and make this work differently for front jack versus rear jack
 VolumeToast()
 {
-    title := VA_GetMasterVolume() . "%"
-    ; NOTE: each volume up/down call is +/- 2%, so we're dropping to 20% so that each "notch" is an item (and it's not enormous)
-    str := DrawTextBar(VA_GetMasterVolume(), 20, 10, "▲", "▽", "")
-    TrayTip, %title%, %str%, 10
+  global iterationsSinceVolumeTap
+  vol := Round(VA_GetMasterVolume()*5) . "%"
+  ; NOTE: each volume up/down call is +/- 2%, so we're dropping to 20%
+  volBar := DrawTextBar(VA_GetMasterVolume(), 20, 16, "■", "□", "")
+  GuiControl,, OutputText, %vol%
+  GuiControl,, OutputBar, %volBar%
+  iterationsSinceVolumeTap = 0
+  SoundPlay, %A_ScriptDir%\volume.wav
 }
+
+; Iterating volume OSD subroutine
+; Needs some serious optimisation and improvement (It currently lacks any kind of delay before fading out)
+VolumeFadeOutIteration:
+
+  if (iterationsSinceVolumeTap < maxOpacity / 2)
+  {
+    iterationsSinceVolumeTap++
+  }
+
+  if (iterationsSinceVolumeTap = 1)
+  {
+    WinSet, Transparent, %maxOpacity%, Output
+  }
+  Else If (iterationsSinceVolumeTap = maxOpacity / 2)
+  {
+    WinSet, Transparent, 0, Output
+  }
+  Else
+  {
+    TransFade := maxOpacity - iterationsSinceVolumeTap*2
+    WinSet, Transparent, %TransFade%, Output
+  }
+
+return
 
 ;;; UTILITY FUNCTIONS ;;;
 
@@ -205,10 +252,10 @@ VolumeToast()
 ; DrawTextBar(20, 100, 5, "★", "☆", "½") == ★☆☆☆☆
 ; DrawTextBar(25, 100, 5, "★", "☆", "½") == ★½☆☆☆
 ; DrawTextBar(25, 100, 5, "★", "☆", "")  == ★☆☆☆☆ (No intermediate char floors result)
-; Note that overflowing the "maximum" value will just draw a longer bar at this point.
 DrawTextBar(Value,Maximum,Bars,FullChar,EmptyChar,IntermediateChar)
 {
     Ratio := Maximum / Bars
+	Value := (Value > Maximum) ? Maximum : Value
     Output .= Repeat(FullChar,Value // Ratio)
     Output .= (IntermediateChar <> "" and Value / Ratio > Value // Ratio) ? IntermediateChar . Repeat(EmptyChar, Bars-1-Value // Ratio) : Repeat(EmptyChar, Bars-Value // Ratio)
     Return Output
