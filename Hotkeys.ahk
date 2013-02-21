@@ -5,15 +5,15 @@
 
 ;;; Setting up Volume and Feedback GUI ;;;
 Gui, +ToolWindow -Caption +AlwaysOnTop +Disabled
-Gui, Color, 444444
+Gui, Color, 000000
 
-Gui, add, picture, vOutputPicture x57 y30, %A_WorkingDir%\headphone.png
+Gui, add, picture, vOutputPicture x57 y59, %A_WorkingDir%\headphone.png
 
 Gui, Font, cFFFFFF S14, Arial
-Gui, add, Text, vOutputBar center x0 w206 h34 y170, □□□□□□□□□□□□□□□□
+Gui, add, Text, vOutputBar center x0 w206 h20 y170, □□□□□□□□□□□□□□□□
 
-Gui, Font, cFFFFFF S18, Segoe UI
-Gui, add, Text, vOutputText center x0 w206 h34 y125, ???
+Gui, Font, cFFFFFF S10, w100, Segoe UI
+Gui, add, Text, vOutputText center x0 w206 h20 y190, 
 
 Gui, Show, H211 W206 Center NoActivate, Output
 WinSet, Region, 0-0 H211 W206 R30-30, Output
@@ -214,6 +214,10 @@ VolumeToast()
   vol := Round(VA_GetMasterVolume()*5) . "%"
   ; NOTE: each volume up/down call is +/- 2%, so we're dropping to 20%
   volBar := DrawTextBar(VA_GetMasterVolume(), 20, 16, "■", "□", "")
+  If (Round(VA_GetMasterVolume()*5) <= 100)
+  {
+    vol =
+  }
   GuiControl,, OutputText, %vol%
   GuiControl,, OutputBar, %volBar%
   iterationsSinceVolumeTap = 0
@@ -255,7 +259,7 @@ return
 DrawTextBar(Value,Maximum,Bars,FullChar,EmptyChar,IntermediateChar)
 {
     Ratio := Maximum / Bars
-	Value := (Value > Maximum) ? Maximum : Value
+    Value := (Value > Maximum) ? Maximum : Value
     Output .= Repeat(FullChar,Value // Ratio)
     Output .= (IntermediateChar <> "" and Value / Ratio > Value // Ratio) ? IntermediateChar . Repeat(EmptyChar, Bars-1-Value // Ratio) : Repeat(EmptyChar, Bars-Value // Ratio)
     Return Output
