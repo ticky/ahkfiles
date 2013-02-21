@@ -211,15 +211,18 @@ return
 VolumeToast()
 {
   global iterationsSinceVolumeTap
-  vol := Round(VA_GetMasterVolume()*5) . "%"
-  ; NOTE: each volume up/down call is +/- 2%, so we're dropping to 20%
+  ; NOTE: each volume up/down call is +/- 2%, so we're dropping to 20%, and showing 16 segments.
   volBar := DrawTextBar(VA_GetMasterVolume(), 20, 16, "■", "□", "")
+  GuiControl,, OutputBar, %volBar%
+  ; Display volume maximum is one fifth of system volume.
+  ; For system volumes greater than 20% (100% Display Volume), we show a percentage of display volume.
+  ; So a system volume of 30% would be 150% Display Volume.
+  vol := Round(VA_GetMasterVolume()*5) . "%"
   If (Round(VA_GetMasterVolume()*5) <= 100)
   {
     vol =
   }
   GuiControl,, OutputText, %vol%
-  GuiControl,, OutputBar, %volBar%
   iterationsSinceVolumeTap = 0
   SoundPlay, %A_ScriptDir%\volume.wav
 }
