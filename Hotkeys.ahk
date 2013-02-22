@@ -3,26 +3,26 @@
 ;;;; Geoff's Custom Hotkeys ;;;;
 ; These hotkeys and many functions are compiled from many sources all over the web.
 
-;;; Setting up Volume and Feedback GUI ;;;
+;;; Setting up Volume and Feedback OSD ;;;
 Gui, +ToolWindow -Caption +AlwaysOnTop +Disabled
 Gui, Color, 000000
 
-Gui, add, picture, vOutputPicture x57 y59, %A_WorkingDir%\headphone.png
+Gui, add, picture, vOSDPicture x57 y59, %A_WorkingDir%\headphone.png
 
 Gui, Font, cFFFFFF S14, Arial
-Gui, add, Text, vOutputBar center x0 w206 h20 y170, □□□□□□□□□□□□□□□□
+Gui, add, Text, vOSDBar center x0 w206 h20 y170, □□□□□□□□□□□□□□□□
 
 Gui, Font, cFFFFFF S10, w100, Segoe UI
-Gui, add, Text, vOutputText center x0 w206 h20 y190, 
+Gui, add, Text, vOSDSmallLabel center x0 w206 h20 y190, 
 
-Gui, Show, H211 W206 Center NoActivate, Output
-WinSet, Region, 0-0 H211 W206 R30-30, Output
-WinSet, ExStyle, +0x20, Output
+Gui, Show, H211 W206 Center NoActivate, OSDWindow
+WinSet, Region, 0-0 H211 W206 R30-30, OSDWindow
+WinSet, ExStyle, +0x20, OSDWindow
 
-SetTimer, VolumeFadeOutIteration, 1
+SetTimer, OSDIteration, 1
 
-iterationsSinceVolumeTap = 60
-maxOpacity = 120
+OSDIterationsSinceActivated = 60
+OSDMaximumOpacity = 120
 
 ;;; MAC-STYLE SHORTCUTS ;;;
 ; These are shortcuts I've essentially lifted from my Mac, substituting F12 for the Eject key,
@@ -48,7 +48,7 @@ Else
 }
 return
 
-; Ctrl+Shift+F12 = Sleep display and Lock
+; Ctrl+Shift+F12 or Win+L = Sleep display and Lock
 ^+F12::
 Sleep 1000
 SendMessage, 0x112, 0xF170, 2,, Program Manager
@@ -187,6 +187,19 @@ iTunesToast()
     TrayTip, %title%, %trackInfo%, 10
 }
 
+iTunesOSD()
+{
+    global OSDIterationsSinceActivated
+    iTunes := ComObjCreate("iTunes.Application")
+    ;trackInfo := iTunes.CurrentTrack.Name . "`n" . iTunes.CurrentTrack.Artist . "`n" . iTunes.CurrentTrack.Album
+    ;TrayTip, %title%, %trackInfo%, 10
+    trackName := iTunes.CurrentTrack.Name
+    artistName := iTunes.CurrentTrack.Artist
+    GuiControl,, OSDBar, %trackName%
+    GuiControl,, OSDSmallLabel, %artistName%
+    OSDIterationsSinceActivated = 0
+}
+
 ; Shows a traytip of the current playing track's info and rating
 iTunesRatingToast()
 {
@@ -198,7 +211,7 @@ iTunesRatingToast()
 }
 
 #^R::
-iTunesRatingToast()
+iTunesOSD()
 return
 
 #^V::
@@ -210,10 +223,10 @@ return
 ; Need to detect output and make this work differently for front jack versus rear jack
 VolumeToast()
 {
-  global iterationsSinceVolumeTap
+  global OSDIterationsSinceActivated
   ; NOTE: each volume up/down call is +/- 2%, so we're dropping to 20%, and showing 16 segments.
   volBar := DrawTextBar(VA_GetMasterVolume(), 20, 16, "■", "□", "")
-  GuiControl,, OutputBar, %volBar%
+  GuiControl,, OSDBar, %volBar%
   ; Display volume maximum is one fifth of system volume.
   ; For system volumes greater than 20% (100% Display Volume), we show a percentage of display volume.
   ; So a system volume of 30% would be 150% Display Volume.
@@ -222,32 +235,32 @@ VolumeToast()
   {
     vol =
   }
-  GuiControl,, OutputText, %vol%
-  iterationsSinceVolumeTap = 0
+  GuiControl,, OSDSmallLabel, %vol%
+  OSDIterationsSinceActivated = 0
   SoundPlay, %A_ScriptDir%\volume.wav
 }
 
 ; Iterating volume OSD subroutine
 ; Needs some serious optimisation and improvement (It currently lacks any kind of delay before fading out)
-VolumeFadeOutIteration:
+OSDIteration:
 
-  if (iterationsSinceVolumeTap < maxOpacity / 2)
+  if (OSDIterationsSinceActivated < OSDMaximumOpacity / 2)
   {
-    iterationsSinceVolumeTap++
+    OSDIterationsSinceActivated++
   }
 
-  if (iterationsSinceVolumeTap = 1)
+  if (OSDIterationsSinceActivated = 1)
   {
-    WinSet, Transparent, %maxOpacity%, Output
+    WinSet, Transparent, %OSDMaximumOpacity%, OSDWindow
   }
-  Else If (iterationsSinceVolumeTap = maxOpacity / 2)
+  Else If (OSDIterationsSinceActivated = OSDMaximumOpacity / 2)
   {
-    WinSet, Transparent, 0, Output
+    WinSet, Transparent, 0, OSDWindow
   }
   Else
   {
-    TransFade := maxOpacity - iterationsSinceVolumeTap*2
-    WinSet, Transparent, %TransFade%, Output
+    TransFade := OSDMaximumOpacity - OSDIterationsSinceActivated*2
+    WinSet, Transparent, %TransFade%, OSDWindow
   }
 
 return
@@ -263,16 +276,16 @@ DrawTextBar(Value,Maximum,Bars,FullChar,EmptyChar,IntermediateChar)
 {
     Ratio := Maximum / Bars
     Value := (Value > Maximum) ? Maximum : Value
-    Output .= Repeat(FullChar,Value // Ratio)
-    Output .= (IntermediateChar <> "" and Value / Ratio > Value // Ratio) ? IntermediateChar . Repeat(EmptyChar, Bars-1-Value // Ratio) : Repeat(EmptyChar, Bars-Value // Ratio)
-    Return Output
+    ReturnValue .= Repeat(FullChar,Value // Ratio)
+    ReturnValue .= (IntermediateChar <> "" and Value / Ratio > Value // Ratio) ? IntermediateChar . Repeat(EmptyChar, Bars-1-Value // Ratio) : Repeat(EmptyChar, Bars-Value // Ratio)
+    Return ReturnValue
 }
 
 Repeat(String,Times)
 {
   Loop, %Times%
-    Output .= String
-  Return Output
+    ReturnValue .= String
+  Return ReturnValue
 }
 
 ; Gives a nice string version of the iTunes player state for the integer returned by the COM API.
