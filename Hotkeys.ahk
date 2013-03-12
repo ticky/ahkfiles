@@ -55,6 +55,12 @@ SendMessage, 0x112, 0xF170, 2,, Program Manager
 DllCall("LockWorkStation")
 return
 
+#L::
+Sleep 1000
+SendMessage, 0x112, 0xF170, 2,, Program Manager
+DllCall("LockWorkStation")
+return
+
 ; Ctrl+Alt+Super+F12 = Shut Down
 ^!#F12::
 Sleep 1000
@@ -164,6 +170,18 @@ Else
 {
     Send, {Volume_Up}
     VolumeToast()
+}
+return
+
+; Clipboard Monitor for afp:// URIs.
+OnClipboardChange:
+if ( InStr(clipboard, "afp`://") == 1 )
+{
+    clip = %clipboard%
+    StringReplace, clip, clip, afp`://, \\, All
+    StringReplace, clip, clip, /, \, All
+    clipboard = %clip%
+    TrayTip, Apple Filing Protocol URI detected, Converted to Windows path and updated clipboard.
 }
 return
 
