@@ -9,6 +9,8 @@ Generally written to avoid annoyances I find when using Windows.
 * Modified version of FocuslessScroll, which allows you to scroll the window under the cursor and adds acceleration. This version has been modified to include "natural" (inverse) scrolling
 * Mac-like hotkeys for various common functions like sleeping the display, shutting down, rebooting
 * Media and volume keys modeled after Apple's keyboard layouts
+* Clipboard monitor which rewrites afp protocol links as Windows-friendly SMB paths (Note: Is not aware of context. Simply translates host and path name)
+* Pauses iTunes playback (if running and playing) on session lock
 * iTunes metadata support (Incomplete at this stage)
 * Volume meter (showing the first 20% of the volume scale) compatible with Vista and newer
 * Relatively convenient Scroll Lock toggle for most key overrides (but not all hotkeys) so it doesn't interrupt anything
@@ -48,7 +50,7 @@ NOTE: Shortcuts marked with an asterisk are _not_ disabled by `Scroll Lock`.
 ### System, Session and Hardware
 
 * `Alt`+`Backspace`: Delete to last space*
-* `Control`+`Shift`+`F12`: Sleep display and lock session*
+* `Control`+`Shift`+`F12` or `Win`+`L`: Sleep display and lock session*
 * `Control`+`Win`+`Alt`+`F12`: Shut Down*
 * `Control`+`Alt`+`F12`: Restart*
 * `F12`: Eject DVD Drive

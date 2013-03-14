@@ -50,12 +50,14 @@ return
 
 ; Ctrl+Shift+F12 or Win+L = Sleep display and Lock
 ^+F12::
+iTunesPauseIfActive()
 Sleep 1000
 SendMessage, 0x112, 0xF170, 2,, Program Manager
 DllCall("LockWorkStation")
 return
 
 #L::
+iTunesPauseIfActive()
 Sleep 1000
 SendMessage, 0x112, 0xF170, 2,, Program Manager
 DllCall("LockWorkStation")
@@ -228,6 +230,22 @@ iTunesRatingToast()
     TrayTip, %title%, %ratingStr%, 10
 }
 
+; If the iTunes process exists, and the player state is currently playing, pauses playback.
+iTunesPauseIfActive()
+{
+    Process, Exist, itunes.exe
+    if ErrorLevel
+    {
+        ; iTunes is running
+        iTunes := ComObjCreate("iTunes.Application")
+        state := iTunes.PlayerState
+        if (state == 1)
+        {
+            iTunes.Pause()
+        }
+    }
+}
+
 #^R::
 iTunesOSD()
 return
@@ -309,12 +327,12 @@ Repeat(String,Times)
 ; Gives a nice string version of the iTunes player state for the integer returned by the COM API.
 iTunesPlayerStateString(playerStateId)
 {
-    if(playerStateId == 0)
+    if(playerStateId == 1)
     {
         return "Playing"
     }
 
-    if(playerStateId == 1)
+    if(playerStateId == 0)
     {
         return "Paused"
     }
