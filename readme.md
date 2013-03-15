@@ -12,28 +12,51 @@ Generally written to avoid annoyances I find when using Windows.
 * Clipboard monitor which rewrites afp protocol links as Windows-friendly SMB paths (Note: Is not aware of context. Simply translates host and path name)
 * Pauses iTunes playback (if running and playing) on session lock
 * iTunes metadata support (Incomplete at this stage)
-* Volume meter (showing the first 20% of the volume scale) compatible with Vista and newer
+* Volume meter (showing the first 20% of the volume scale) compatible with Windows Vista and Windows 7. Disabled on Windows 8 in favour of Windows' new built-in volume meter
 * Relatively convenient Scroll Lock toggle for most key overrides (but not all hotkeys) so it doesn't interrupt anything
 
 ## Requirements
 
+* Windows Vista, 7 or 8
 * A Unicode version of Autohotkey_L (Current versions of Autohotkey seem to all "just work" but YMMV)
 * The [Vista Audio Control library](http://www.autohotkey.com/board/topic/21984-vista-audio-control-functions/)
-* Windows Vista, 7 or 8
 
 ## Setup
 
 * Make sure Autohotkey is installed
 * Unzip or checkout this code to a directory of your choosing (somewhere in Documents is probably a good idea)
+* (Optional) Disable components (see "config.ini" section below)
 * (Optional) Put a `volume.wav` file in the same directory to play a short sound when changing volume (Extracting and converting `volume.aiff` from an OS X system works nicely - not provided for obvious legal reasons)
 * Create a shortcut in your Startup folder running AutoHotKey for each script you want to run
 * Run your shortcuts (they won't run automatically until you log back in)
+
+## `config.ini`
+
+The `config.ini` file, stored in the same directory as the script itself, allows enabling and disabling certain features.
+
+All current options accept either `true` or `false` values.
+
+### General
+
+* `clipboard` - Enable clipboard monitoring and replacement
+
+### Hotkeys
+
+* `macstyle` - Enable Mac-style keyboard shortcuts ("System, Session and Hardware" section below)
+* `itunes` - Enable iTunes integration for computer lock pause function
+* `everything` - Enable "Everything" search integration.
+* `mediakeys` - Enable media playback keys ("Media Playback" section below)
+* `volumekeys` - Enable system volume control keys ("System Volume" section below)
+
+### OSD
+
+* `enable` - Show volume OSD (Always overridden to "false" on Windows 8)
 
 ## Key Mappings
 
 * `Scroll Lock`: Enable/Disable hoykeys, natural scrolling and acceleration
 
-NOTE: Shortcuts marked with an asterisk are _not_ disabled by `Scroll Lock`.
+NOTE: Shortcuts marked with an asterisk are _not_ disabled by `Scroll Lock`. Hotkeys disabled within `config.ini` are not toggled by `Scroll Lock`.
 
 ### Media Playback
 
@@ -50,7 +73,7 @@ NOTE: Shortcuts marked with an asterisk are _not_ disabled by `Scroll Lock`.
 ### System, Session and Hardware
 
 * `Alt`+`Backspace`: Delete to last space*
-* `Control`+`Shift`+`F12` or `Win`+`L`: Sleep display and lock session*
+* `Control`+`Shift`+`F12`, `Win`+`L`: Sleep display and lock session*
 * `Control`+`Win`+`Alt`+`F12`: Shut Down*
 * `Control`+`Alt`+`F12`: Restart*
 * `F12`: Eject DVD Drive
