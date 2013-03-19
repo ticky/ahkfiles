@@ -336,6 +336,7 @@ iTunesRatingToast()
 ; If the iTunes process exists, and the player state is currently playing, pauses playback.
 iTunesPauseIfActive()
 {
+  global ituneshooks
   if ( %ituneshooks% == true )
   {
     Process, Exist, itunes.exe
