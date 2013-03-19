@@ -201,7 +201,6 @@ if ( %volumekys% != true or GetKeyState("ScrollLock", "T") )
 Else
 {
   Send, {Volume_Mute}
-  VolumeToast()
 }
 return
 
@@ -214,7 +213,6 @@ if ( %volumekys% != true or GetKeyState("ScrollLock", "T") )
 Else
 {
   Send, {Volume_Down}
-  VolumeToast()
 }
 return
 
@@ -227,8 +225,23 @@ if ( %volumekys% != true or GetKeyState("ScrollLock", "T") )
 Else
 {
   Send, {Volume_Up}
-  VolumeToast()
 }
+return
+
+; Show OSD for Volume Keys
+~Volume_Mute::
+  Sleep 100
+  VolumeToast()
+return
+
+~Volume_Down::
+  Sleep 100
+  VolumeToast()
+return
+
+~Volume_Up::
+  Sleep 100
+  VolumeToast()
 return
 
 ; Clipboard Monitor for afp:// URIs.
@@ -260,6 +273,29 @@ if (%everythingkey% == true)
   Send ^{Space}
 Else
   Send #{f}
+return
+
+; Caps Lock Suppression
+; If you press Caps Lock for less than 100ms, the input is ignored.
+; Avoids accidental caps; mimics Apple Keyboard behaviour.
+$CapsLock::
+  If capsLockIsPressed
+    return
+  capsLockIsPressed := true
+  SetTimer, CapsLockSuppress, 100
+return
+
+$CapsLock Up::
+  SetTimer, CapsLockSuppress, Off
+  capsLockIsPressed := false
+return
+
+CapsLockSuppress:
+  SetTimer, CapsLockSuppress, Off
+  capsLockIsPressed := false
+  SetStoreCapslockMode Off
+  Send, {CapsLock}
+  SetStoreCapslockMode On
 return
 
 ;;; iTunes COM Stuff ;;;

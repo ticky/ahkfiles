@@ -9,6 +9,7 @@ Generally written to avoid annoyances I find when using Windows.
 * Modified version of FocuslessScroll, which allows you to scroll the window under the cursor and adds acceleration. This version has been modified to include "natural" (inverse) scrolling
 * Mac-like hotkeys for various common functions like sleeping the display, shutting down, rebooting
 * Media and volume keys modeled after Apple's keyboard layouts
+* Accidental presses of Caps Lock are ignored - you need to press it for at least 100ms to register (most accidental presses are quicker than that)
 * Clipboard monitor which rewrites afp protocol links as Windows-friendly SMB paths (Note: Is not aware of context. Simply translates host and path name)
 * Pauses iTunes playback (if running and playing) on session lock
 * iTunes metadata support (Incomplete at this stage)
