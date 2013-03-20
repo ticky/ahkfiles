@@ -5,7 +5,7 @@
 
 ;;; Loading Configuration ;;;
 
-; Load config from ini
+; Toggles
 IniRead, osdenable, config.ini, OSD, enable, true
 IniRead, machotkys, config.ini, Hotkeys, macstyle, true
 IniRead, mediakeys, config.ini, Hotkeys, mediakeys, true
@@ -14,11 +14,51 @@ IniRead, everythingkey, config.ini, Hotkeys, everything, true
 IniRead, clipboardedit, config.ini, General, clipboard, true
 IniRead, ituneshooks, config.ini, General, itunes, true
 
+; General hotkeys
+IniRead, keyeject, config.ini, Keymap, eject, F12
+IniRead, keylock, config.ini, Keymap, lock, ^+F12
+IniRead, keyshutdown, config.ini, Keymap, macshutdown, ^!#F12
+IniRead, keyrestart, config.ini, Keymap, macrestart, ^!F12
+
+; Media playback hotkeys
+IniRead, keymediaprev, config.ini, Keymap, mediaprev, F6
+IniRead, keymediaplay, config.ini, Keymap, mediaplay, F7
+IniRead, keymedianext, config.ini, Keymap, medianext, F8
+
+; iTunes rating hotkeys
+IniRead, keyitunesrateup, config.ini, Keymap, itunesrateup, ^#Up
+IniRead, keyitunesratedown, config.ini, Keymap, itunesratedown, ^#Down
+
+; Volume control hotkeys
+IniRead, keyvolumemute, config.ini, Keymap, volumemute, F9
+IniRead, keyvolumedown, config.ini, Keymap, volumedown, F10
+IniRead, keyvolumeup, config.ini, Keymap, volumeup, F11
+
 ; Disable the OSD entirely on Windows 8 (which provides its own)
 if A_OSVersion in WIN_8,WIN_9
 {
   osdenable = false
 }
+
+; Binding general hotkeys
+Hotkey $%keyeject%, EjectDVD
+Hotkey $%keylock%, SleepLock
+Hotkey $%keyshutdown%, ShutDown
+Hotkey $%keyrestart%, Restart
+
+; Binding media playback hotkeys
+Hotkey $%keymediaprev%, MediaPrev
+Hotkey $%keymediaplay%, MediaPlay
+Hotkey $%keymedianext%, MediaNext
+
+; Binding iTunes rating hotkeys
+Hotkey $%keyitunesrateup%, iTunesRateUp
+Hotkey $%keyitunesratedown%, iTunesRateDown
+
+; Binding volume control hotkeys
+Hotkey $%keyvolumemute%, VolumeMute
+Hotkey $%keyvolumedown%, VolumeDown
+Hotkey $%keyvolumeup%, VolumeUp
 
 ;;; Setting up Volume and Feedback OSD ;;;
 
@@ -45,16 +85,19 @@ if (%osdenable% == true)
   OSDMaximumOpacity = 120
 }
 
+return
+
 ;;; MAC-STYLE SHORTCUTS ;;;
 ; These are shortcuts I've essentially lifted from my Mac, substituting F12 for the Eject key,
 ; and shifting other shortcuts over one key.
 ; NOTE: Most of these are toggled by Scroll Lock (for lack of an "fn" key on most Keyboards)
 
+
 ; Eject DVD Drive
-$F12::
+EjectDVD:
 if (%machotkys% != true or GetKeyState("ScrollLock", "T"))
 {
-  Send, {F12}
+  Send, {%keyeject%}
 }
 Else
 {
@@ -69,11 +112,11 @@ Else
 }
 return
 
-; Ctrl+Shift+F12 or Win+L = Sleep display and Lock
-^+F12::
+; Sleep display and Lock
+SleepLock:
 if (%machotkys% != true)
 {
-  Send, {^+F12}
+  Send, {%keylock%}
 }
 Else
 {
@@ -84,25 +127,34 @@ Else
 }
 return
 
-#L::
-if (%machotkys% != true)
-{
-  Send, {#L}
-}
-Else
-{
-  iTunesPauseIfActive()
-  Sleep 1000
-  SendMessage, 0x112, 0xF170, 2,, Program Manager
-  DllCall("LockWorkStation")
-}
+; Caps Lock Suppression
+; If you press Caps Lock for less than 100ms, the input is ignored.
+; Avoids accidental caps; mimics Apple Keyboard behaviour.
+$CapsLock::
+  If capsLockIsPressed
+    return
+  capsLockIsPressed := true
+  SetTimer, CapsLockSuppress, 100
 return
 
-; Ctrl+Alt+Super+F12 = Shut Down
-^!#F12::
+$CapsLock Up::
+  SetTimer, CapsLockSuppress, Off
+  capsLockIsPressed := false
+return
+
+CapsLockSuppress:
+  SetTimer, CapsLockSuppress, Off
+  capsLockIsPressed := false
+  SetStoreCapslockMode Off
+  Send, {CapsLock}
+  SetStoreCapslockMode On
+return
+
+; Shut Down
+ShutDown:
 if (%machotkys% != true)
 {
-  Send, {^!#F12}
+  Send, {%keyshutdown%}
 }
 Else
 {
@@ -111,11 +163,11 @@ Else
 }
 return
 
-; Ctrl+Alt+F12 = Restart
-^!F12::
+; Restart
+Restart:
 if (%machotkys% != true)
 {
-  Send, {^!#F12}
+  Send, {%keyrestart%}
 }
 Else
 {
@@ -139,11 +191,11 @@ return
 ;;; MEDIA KEYS ;;;
 ; These are intended for keyboards lacking media keys.
 
-; F6 = Media ◄◄
-$F6::
+; Media ◄◄
+MediaPrev:
 if (%mediakeys% != true or GetKeyState("ScrollLock", "T"))
 {
-  Send, {F6}
+  Send, {%keymediaprev%}
 }
 Else
 {
@@ -151,11 +203,11 @@ Else
 }
 return
 
-; F7 = Media ►||
-$F7::
+; Media ►||
+MediaPlay:
 if (%mediakeys% != true or GetKeyState("ScrollLock", "T"))
 {
-  Send, {F7}
+  Send, {%keymediaplay%}
 }
 Else
 {
@@ -164,11 +216,11 @@ Else
 return
 
 
-; F8 = Media ►►
-$F8::
+; Media ►►
+MediaNext:
 if (%mediakeys% != true or GetKeyState("ScrollLock", "T"))
 {
-  Send, {F8}
+  Send, {%keymedianext%}
 }
 Else
 {
@@ -178,53 +230,56 @@ return
 
 ; iTunes Ratings
 
-; Control+Win+Up = Increase song rating by half a star
-$^#Up::
+; Increase song rating by half a star
+iTunesRateUp:
   iTunes := ComObjCreate("iTunes.Application")
   iTunes.CurrentTrack.Rating += 10
   iTunesRatingToast()
 Return
 
-; Control+Win+Down = Decrease song rating by half a star
-$^#Down::
+; Decrease song rating by half a star
+iTunesRateDown:
   iTunes := ComObjCreate("iTunes.Application")
   iTunes.CurrentTrack.Rating -= 10
   iTunesRatingToast()
 Return
 
-; F9 = Mute
-$F9::
+; Mute
+VolumeMute:
 if ( %volumekys% != true or GetKeyState("ScrollLock", "T") )
 {
-  Send, {F9}
+  Send, {%keyvolumemute%}
 }
 Else
 {
   Send, {Volume_Mute}
+  VolumeToast()
 }
 return
 
-; F10 = Volume Down
-$F10::
+; Volume Down
+VolumeDown:
 if ( %volumekys% != true or GetKeyState("ScrollLock", "T") )
 {
-  Send, {F10}
+  Send, {%keyvolumedown%}
 }
 Else
 {
   Send, {Volume_Down}
+  VolumeToast()
 }
 return
 
-; F11 = Volume Up
-$F11::
+; Volume Up
+VolumeUp:
 if ( %volumekys% != true or GetKeyState("ScrollLock", "T") )
 {
-  Send, {F11}
+  Send, {%keyvolumeup%}
 }
 Else
 {
   Send, {Volume_Up}
+  VolumeToast()
 }
 return
 
@@ -273,29 +328,6 @@ if (%everythingkey% == true)
   Send ^{Space}
 Else
   Send #{f}
-return
-
-; Caps Lock Suppression
-; If you press Caps Lock for less than 100ms, the input is ignored.
-; Avoids accidental caps; mimics Apple Keyboard behaviour.
-$CapsLock::
-  If capsLockIsPressed
-    return
-  capsLockIsPressed := true
-  SetTimer, CapsLockSuppress, 100
-return
-
-$CapsLock Up::
-  SetTimer, CapsLockSuppress, Off
-  capsLockIsPressed := false
-return
-
-CapsLockSuppress:
-  SetTimer, CapsLockSuppress, Off
-  capsLockIsPressed := false
-  SetStoreCapslockMode Off
-  Send, {CapsLock}
-  SetStoreCapslockMode On
 return
 
 ;;; iTunes COM Stuff ;;;
