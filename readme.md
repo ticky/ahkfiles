@@ -40,6 +40,7 @@ All current options accept either `true` or `false` values.
 ### General
 
 * `clipboard` - Enable clipboard monitoring and replacement
+* `itunes` - Enable iTunes-specific functionality
 
 ### Hotkeys
 
