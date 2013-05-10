@@ -5,7 +5,11 @@
 ;Directives
 #NoEnv
 #SingleInstance Force
-#MaxHotkeysPerInterval 100 ;Avoid warning when mouse wheel turned very fast
+#MaxHotkeysPerInterval 150 ;Avoid warning when mouse wheel turned very fast
+#Include nchittest.ahk
+
+Menu, Tray, Tip, FocuslessScroll by Scoox
+Menu, Tray, Icon, Shell32.dll, 123
 
 ;Autoexecute code
 MinLinesPerNotch := 1
@@ -23,13 +27,15 @@ FocuslessScroll(MinLinesPerNotch, MaxLinesPerNotch, AccelerationThreshold, Accel
 {
 	SetBatchLines, -1 ;Run as fast as possible
 	CoordMode, Mouse, Screen ;All coords relative to screen
+	SetMouseDelay, -1
+	SetKeyDelay, -1
 
 	If(GetKeyState("ScrollLock", "T")) AND (EmulateStandardWScrollLock)
-    {
-        MinLinesPerNotch := 3
-        MaxLinesPerNotch := 3
-        NaturalScrolling := false
-    }
+	{
+		MinLinesPerNotch := 3
+		MaxLinesPerNotch := 3
+		NaturalScrolling := false
+	}
 
 	;Stutter filter: Prevent stutter caused by cheap mice by ignoring successive WheelUp/WheelDown events that occur to close together.
 	If(A_TimeSincePriorHotkey < StutterThreshold) ;Quickest succession time in ms
@@ -42,12 +48,20 @@ FocuslessScroll(MinLinesPerNotch, MaxLinesPerNotch, AccelerationThreshold, Accel
 	lParam := (m_y << 16) | (m_x & 0x0000FFFF)
 	wParam := (120 << 16) ;Wheel delta is 120, as defined by MicroSoft
 
-    If(NaturalScrolling) ; hack to invert for natural scrolling
-        wParam := -wParam
+	If(NaturalScrolling) ; hack to invert for natural scrolling
+		wParam := -wParam
 
 	;Detect WheelDown event
 	If(A_ThisHotkey = "WheelDown" Or A_ThisHotkey = "^WheelDown" Or A_ThisHotkey = "+WheelDown" Or A_ThisHotkey = "*WheelDown")
+	{
 		wParam := -wParam ;If scrolling down, invert scroll direction
+
+		; Minimise windows if scrolling on their title bar
+		If(IsOverTitleBar(m_x, m_y, ControlClass1))
+		{
+			PostMessage, 0x112, 0xF020,,, ahk_id %ControlClass1% ; 0x112 = WM_SYSCOMMAND, 0xF020 = SC_MINIMIZE
+		}
+	}
 
 	;Detect modifer keys held down (only Shift and Control work)
 	If(GetKeyState("Shift","p"))

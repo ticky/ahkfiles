@@ -3,6 +3,9 @@
 ;;;; Geoff's Custom Hotkeys ;;;;
 ; These hotkeys and many functions are compiled from many sources all over the web.
 
+Menu, Tray, Tip, Geoff's Custom Hotkeys (Loading...)
+Menu, Tray, Icon, Shell32.dll, 264
+
 ;;; Loading Configuration ;;;
 
 ; Toggles
@@ -84,6 +87,13 @@ if (%osdenable% == true)
   OSDIterationsSinceActivated = 60
   OSDMaximumOpacity = 120
 }
+
+Menu, Tray, Tip, Geoff's Custom Hotkeys
+Menu, Tray, NoStandard
+Menu, Tray, Add, Lock and Sleep Display, EjectDVD
+Menu, Tray, Add, Eject DVD Drive, EjectDVD
+Menu, Tray, Add
+Menu, Tray, Standard
 
 return
 

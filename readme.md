@@ -6,7 +6,8 @@ Generally written to avoid annoyances I find when using Windows.
 
 ## Features
 
-* Modified version of FocuslessScroll, which allows you to scroll the window under the cursor and adds acceleration. This version has been modified to include "natural" (inverse) scrolling
+* Modified version of FocuslessScroll, which allows you to scroll the window under the cursor and adds acceleration. This version has been modified to include "natural" (inverse) scrolling.
+* Shortcut to minimise windows by scrolling on their titlebar
 * Mac-like hotkeys for various common functions like sleeping the display, shutting down, rebooting
 * Media and volume keys modeled after Apple's keyboard layouts
 * Accidental presses of Caps Lock are ignored - you need to press it for at least 100ms to register (most accidental presses are quicker than that)
@@ -18,7 +19,7 @@ Generally written to avoid annoyances I find when using Windows.
 
 ## Requirements
 
-* Windows Vista, 7 or 8
+* Windows Vista, 7 or 8 (Note that Vista is not tested)
 * A Unicode version of Autohotkey_L (Current versions of Autohotkey seem to all "just work" but YMMV)
 * The [Vista Audio Control library](http://www.autohotkey.com/board/topic/21984-vista-audio-control-functions/)
 
