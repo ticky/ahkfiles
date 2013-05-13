@@ -1,4 +1,4 @@
-; FocuslessScroll by Scoox
+﻿; FocuslessScroll by Scoox
 ; Source: http://www.autohotkey.com/board/topic/6292-send-mouse-scrolls-to-window-under-mouse/?p=398492
 ; Modifications by Geoff Stokes
 

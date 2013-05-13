@@ -6,6 +6,8 @@
 Menu, Tray, Tip, Geoff's Custom Hotkeys (Loading...)
 Menu, Tray, Icon, Shell32.dll, 264
 
+#Include nchittest.ahk
+
 ;;; Loading Configuration ;;;
 
 ; Toggles
@@ -97,11 +99,12 @@ Menu, Tray, Standard
 
 return
 
+#Include Hotstrings.ahk
+
 ;;; MAC-STYLE SHORTCUTS ;;;
 ; These are shortcuts I've essentially lifted from my Mac, substituting F12 for the Eject key,
 ; and shifting other shortcuts over one key.
 ; NOTE: Most of these are toggled by Scroll Lock (for lack of an "fn" key on most Keyboards)
-
 
 ; Eject DVD Drive
 EjectDVD:
@@ -343,21 +346,10 @@ return
 ;;; iTunes COM Stuff ;;;
 ; Reference: http://www.disavian.net/itunes-autohotkeyl/
 
-; Shows a traytip of the current playing track
-iTunesToast()
-{
-  iTunes := ComObjCreate("iTunes.Application")
-  title := "iTunes - " . iTunesPlayerStateString(iTunes.PlayerState)
-  trackInfo := iTunes.CurrentTrack.Name . "`n" . iTunes.CurrentTrack.Artist . "`n" . iTunes.CurrentTrack.Album
-  TrayTip, %title%, %trackInfo%, 10
-}
-
 iTunesOSD()
 {
   global OSDIterationsSinceActivated
   iTunes := ComObjCreate("iTunes.Application")
-  ;trackInfo := iTunes.CurrentTrack.Name . "`n" . iTunes.CurrentTrack.Artist . "`n" . iTunes.CurrentTrack.Album
-  ;TrayTip, %title%, %trackInfo%, 10
   trackName := iTunes.CurrentTrack.Name
   artistName := iTunes.CurrentTrack.Artist
   GuiControl,, OSDBar, %trackName%
@@ -394,14 +386,6 @@ iTunesPauseIfActive()
     }
   }
 }
-
-#^R::
-iTunesPauseIfActive()
-return
-
-#^V::
-VolumeToast()
-return
 
 ; Shows the master volume information, cropped to the bottom 20% of the volume scale
 ; (I only really use the first 20% with my headphones, and this gives a better sense of relative volume for me)
@@ -475,20 +459,4 @@ Repeat(String,Times)
   Loop, %Times%
     ReturnValue .= String
   Return ReturnValue
-}
-
-; Gives a nice string version of the iTunes player state for the integer returned by the COM API.
-iTunesPlayerStateString(playerStateId)
-{
-  if(playerStateId == 1)
-  {
-    return "Playing"
-  }
-
-  if(playerStateId == 0)
-  {
-    return "Paused"
-  }
-
-  return "Unknown"
 }
