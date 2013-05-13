@@ -63,41 +63,36 @@ The `config.ini` file, stored in the same directory as the script itself.
 * `stutterthreshold` - Threshold for stuttering. Prevents stutter caused by cheap mice. Minimum delay between scroll inputs in milliseconds (Number)
 * `naturalscrolling` - Use Natural scrolling (like on touch devices, and modern versions of Mac OS X) (`true` or `false`)
 * `emulatestandardwithscrolllock` - Disable enhancements when Scroll Lock is enabled (`true` or `false`)
-* `titlebarminimise` - Enable a shortcut of scrolling down on a window's title bar to minimise it. (`true` or `false`)
+* `titlebarminimise` - Enable a shortcut of scrolling down on a window's title bar to minimise it (`true` or `false`)
 
 ## Key Mappings
 
 * `Scroll Lock`: Enable/Disable hoykeys, natural scrolling and acceleration
 
-NOTE: Shortcuts marked with an asterisk are _not_ disabled by `Scroll Lock`. Hotkeys disabled within `config.ini` are not toggled by `Scroll Lock`.
+NOTE: Shortcuts marked with an asterisk are _not_ disabled by `Scroll Lock`. Hotkeys disabled within `config.ini` are not toggled by `Scroll Lock`. The following can be overriden in the `Keymap` section of `config.ini` to use another key.
 
 ### Media Playback
 
-* `F6`: Media key Rewind/Previous
-* `F7`: Media key Play/Pause
-* `F8`: Media key Fast Forward/Next
+* `F6`: Media key Rewind/Previous (`mediaprev` in `config.ini`)
+* `F7`: Media key Play/Pause (`mediaplay` in `config.ini`)
+* `F8`: Media key Fast Forward/Next (`medianext` in `config.ini`)
 
 ### System Volume
 
-* `F9`: Mute/Unmute
-* `F10`: Volume Down
-* `F11`: Volume Up
+* `F9`: Mute/Unmute (`volumemute` in `config.ini`)
+* `F10`: Volume Down (`volumedown` in `config.ini`)
+* `F11`: Volume Up (`volumeup` in `config.ini`)
 
 ### System, Session and Hardware
 
 * `Alt`+`Backspace`: Delete to last space*
-* `Control`+`Shift`+`F12`, `Win`+`L`: Sleep display and lock session*
+* `Control`+`Shift`+`F12`, `Win`+`L`: Sleep display and lock session* (`lock` in `config.ini`)
 * `Control`+`Win`+`Alt`+`F12`: Shut Down*
 * `Control`+`Alt`+`F12`: Restart*
-* `F12`: Eject DVD Drive
+* `F12`: Eject DVD Drive (`eject` in `config.ini`)
 * `Win`+`Space`, `Control`+`f`: Search using Everything*
 
 ### iTunes Metadata
 
-* `Control`+`Win`+`↑`: Increase rating of current iTunes track by half a star*
-* `Control`+`Win`+`↓`: Decrease rating of current iTunes track by half a star*
-
-### Debug and Testing Stuff
-
-* `Control`+`Win`+`r`: Show rating of current iTunes track*
-* `Control`+`Win`+`v`: Show current system volume indicator*
+* `Control`+`Win`+`↑`: Increase rating of current iTunes track by half a star* (`itunesrateup` in `config.ini`)
+* `Control`+`Win`+`↓`: Decrease rating of current iTunes track by half a star* (`itunesratedown` in `config.ini`)
