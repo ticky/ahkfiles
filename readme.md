@@ -16,6 +16,7 @@ Generally written to avoid annoyances I find when using Windows.
 * iTunes metadata support (Incomplete at this stage)
 * Volume meter (showing the first 20% of the volume scale) compatible with Windows Vista and Windows 7. Disabled on Windows 8 in favour of Windows' new built-in volume meter
 * Relatively convenient Scroll Lock toggle for most key overrides (but not all hotkeys) so it doesn't interrupt anything
+* A handful of basic hotstrings (still playing with this for now)
 
 ## Requirements
 
@@ -34,26 +35,35 @@ Generally written to avoid annoyances I find when using Windows.
 
 ## `config.ini`
 
-The `config.ini` file, stored in the same directory as the script itself, allows enabling and disabling certain features.
-
-All current options accept either `true` or `false` values.
+The `config.ini` file, stored in the same directory as the script itself.
 
 ### General
 
-* `clipboard` - Enable clipboard monitoring and replacement
-* `itunes` - Enable iTunes-specific functionality
+* `clipboard` - Enable clipboard monitoring and replacement (`true` or `false`)
+* `itunes` - Enable iTunes-specific functionality (`true` or `false`)
 
 ### Hotkeys
 
-* `macstyle` - Enable Mac-style keyboard shortcuts ("System, Session and Hardware" section below)
-* `itunes` - Enable iTunes integration for computer lock pause function
-* `everything` - Enable "Everything" search integration.
-* `mediakeys` - Enable media playback keys ("Media Playback" section below)
-* `volumekeys` - Enable system volume control keys ("System Volume" section below)
+* `macstyle` - Enable Mac-style keyboard shortcuts ("System, Session and Hardware" section below) (`true` or `false`)
+* `itunes` - Enable iTunes integration for computer lock pause function (`true` or `false`)
+* `everything` - Enable "Everything" search integration. (`true` or `false`)
+* `mediakeys` - Enable media playback keys ("Media Playback" section below) (`true` or `false`)
+* `volumekeys` - Enable system volume control keys ("System Volume" section below) (`true` or `false`)
 
 ### OSD
 
-* `enable` - Show volume OSD (Always overridden to "false" on Windows 8)
+* `enable` - Show volume OSD (Always overridden to "false" on Windows 8) (`true` or `false`)
+
+### FocuslessScroll
+
+* `linespernotchmin` - Minimum lines-per-notch value (Controls scroll wheel acceleration) (Number)
+* `linespernotchmax` - Maximum lines-per-notch value (Number)
+* `accelerationthreshold` - Maximum acceleration for scroll wheel (Number)
+* `accelerationtype` - Acceleration algorithm. Either Linear, or Parabolic (`L` or `P`)
+* `stutterthreshold` - Threshold for stuttering. Prevents stutter caused by cheap mice. Minimum delay between scroll inputs in milliseconds (Number)
+* `naturalscrolling` - Use Natural scrolling (like on touch devices, and modern versions of Mac OS X) (`true` or `false`)
+* `emulatestandardwithscrolllock` - Disable enhancements when Scroll Lock is enabled (`true` or `false`)
+* `titlebarminimise` - Enable a shortcut of scrolling down on a window's title bar to minimise it. (`true` or `false`)
 
 ## Key Mappings
 

@@ -12,25 +12,26 @@ Menu, Tray, Tip, FocuslessScroll by Scoox
 Menu, Tray, Icon, Shell32.dll, 123
 
 ;Autoexecute code
-MinLinesPerNotch := 1
-MaxLinesPerNotch := 6
-AccelerationThreshold := 100
-AccelerationType := "P" ;Change to "P" for parabolic acceleration
-StutterThreshold := 10
-NaturalScrolling := true ; Use "Natural" scrolling (like touch devices)
-EmulateStandardWScrollLock := true ; Emulate default Windows scrolling when Scroll Lock is on (3-line, traditional direction)
+IniRead, MinLinesPerNotch, config.ini, FocuslessScroll, linespernotchmin, 1
+IniRead, MaxLinesPerNotch, config.ini, FocuslessScroll, linespernotchmax, 6
+IniRead, AccelerationThreshold, config.ini, FocuslessScroll, accelerationthreshold, 100
+IniRead, AccelerationType, config.ini, FocuslessScroll, accelerationtype, "P"
+IniRead, StutterThreshold, config.ini, FocuslessScroll, stutterthreshold, 10
+IniRead, NaturalScrolling, config.ini, FocuslessScroll, naturalscrolling, true ; Natural Scrolling, like touch devices
+IniRead, EmulateStandardWScrollLock, config.ini, FocuslessScroll, emulatestandardwithscrolllock, true ; Emulate default Windows scrolling when Scroll Lock is on (3-line, traditional direction)
+IniRead, TitlebarMinimise, config.ini, FocuslessScroll, titlebarminimise, true
 
 ;Function definitions
 
 ;See above for details
-FocuslessScroll(MinLinesPerNotch, MaxLinesPerNotch, AccelerationThreshold, AccelerationType, StutterThreshold, NaturalScrolling, EmulateStandardWScrollLock)
+FocuslessScroll(MinLinesPerNotch, MaxLinesPerNotch, AccelerationThreshold, AccelerationType, StutterThreshold, NaturalScrolling, EmulateStandardWScrollLock, TitlebarMinimise)
 {
 	SetBatchLines, -1 ;Run as fast as possible
 	CoordMode, Mouse, Screen ;All coords relative to screen
 	SetMouseDelay, -1
 	SetKeyDelay, -1
 
-	If(GetKeyState("ScrollLock", "T")) AND (EmulateStandardWScrollLock)
+	If(%EmulateStandardWScrollLock% == true) AND (GetKeyState("ScrollLock", "T"))
 	{
 		MinLinesPerNotch := 3
 		MaxLinesPerNotch := 3
@@ -48,7 +49,7 @@ FocuslessScroll(MinLinesPerNotch, MaxLinesPerNotch, AccelerationThreshold, Accel
 	lParam := (m_y << 16) | (m_x & 0x0000FFFF)
 	wParam := (120 << 16) ;Wheel delta is 120, as defined by MicroSoft
 
-	If(NaturalScrolling) ; hack to invert for natural scrolling
+	If(%NaturalScrolling% == true) ; hack to invert for natural scrolling
 		wParam := -wParam
 
 	;Detect WheelDown event
@@ -57,7 +58,7 @@ FocuslessScroll(MinLinesPerNotch, MaxLinesPerNotch, AccelerationThreshold, Accel
 		wParam := -wParam ;If scrolling down, invert scroll direction
 
 		; Minimise windows if scrolling on their title bar
-		If(IsOverTitleBar(m_x, m_y, ControlClass1))
+		If(%TitlebarMinimise% == true) AND (IsOverTitleBar(m_x, m_y, ControlClass1))
 		{
 			PostMessage, 0x112, 0xF020,,, ahk_id %ControlClass1% ; 0x112 = WM_SYSCOMMAND, 0xF020 = SC_MINIMIZE
 		}
@@ -126,10 +127,10 @@ LinesPerNotch(MinLinesPerNotch, MaxLinesPerNotch, AccelerationThreshold, Acceler
 #MaxThreadsPerHotkey 6 ;Adjust to taste. The lower the value, the lesser the momentum problem on certain smooth-scrolling GUI controls (e.g. AHK helpfile main pane, WordPad...), but also the lesser the acceleration feel. The good news is that this setting does no affect most controls, only those that exhibit the momentum problem. Nice.
 ;Scroll with acceleration
 WheelUp::
-WheelDown::FocuslessScroll(MinLinesPerNotch, MaxLinesPerNotch, AccelerationThreshold, AccelerationType, StutterThreshold, NaturalScrolling, EmulateStandardWScrollLock)
+WheelDown::FocuslessScroll(MinLinesPerNotch, MaxLinesPerNotch, AccelerationThreshold, AccelerationType, StutterThreshold, NaturalScrolling, EmulateStandardWScrollLock, TitlebarMinimise)
 ;Ctrl-Scroll zoom with no acceleration (MaxLinesPerNotch = MinLinesPerNotch).
 ^WheelUp::
-^WheelDown::FocuslessScroll(MinLinesPerNotch, MinLinesPerNotch, AccelerationThreshold, AccelerationType, StutterThreshold, NaturalScrolling, EmulateStandardWScrollLock)
+^WheelDown::FocuslessScroll(MinLinesPerNotch, MinLinesPerNotch, AccelerationThreshold, AccelerationType, StutterThreshold, NaturalScrolling, EmulateStandardWScrollLock, TitlebarMinimise)
 ;If you want zoom acceleration, replace above line with this:
-;FocuslessScroll(MinLinesPerNotch, MaxLinesPerNotch, AccelerationThreshold, AccelerationType, StutterThreshold, NaturalScrolling, EmulateStandardWScrollLock)
+;FocuslessScroll(MinLinesPerNotch, MaxLinesPerNotch, AccelerationThreshold, AccelerationType, StutterThreshold, NaturalScrolling, EmulateStandardWScrollLock, TitlebarMinimise)
 #MaxThreadsPerHotkey 1 ;Restore AHK's default  value i.e. 1

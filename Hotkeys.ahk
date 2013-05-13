@@ -6,8 +6,6 @@
 Menu, Tray, Tip, Geoff's Custom Hotkeys (Loading...)
 Menu, Tray, Icon, Shell32.dll, 264
 
-#Include nchittest.ahk
-
 ;;; Loading Configuration ;;;
 
 ; Toggles
