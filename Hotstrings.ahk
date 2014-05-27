@@ -1,9 +1,81 @@
 ﻿;;;; Geoff's Custom Hotstrings ;;;;
 
-;;; Interrobangs ;;;
+Menu, Tray, Tip, Geoff's Custom Hotstrings
+Menu, Tray, Icon, Shell32.dll, 264
 
-:*:?!::‽
-:*:!?::‽
-
-;;; Horizontal Ellipsis ;;;
+:*:--::–
+:*:---::—
+:*:!.::․
+:*:!hdqc::❞
+:*:!hdtq::❝
+:*:!zwj::‍
 :*:...::…
+:*:.'.::∴
+:*:(c)::©
+:*:(p)::℗
+:*:(r)::®
+:*:^2::²
+:*:<#::<3
+:*:1/2::½
+:*:1/3::⅓
+:*:1/4::¼
+:*:1/8::⅛
+:*:2/3::⅔
+:*:3/4::¾
+:*:3/8::⅜
+:*:5/8::⅝
+:*:7/8::⅞
+:*:bluray::Blu-Ray
+:*:bssid::BSSID
+:*:c/o::℅
+:*:dvd::DVD
+:*:essid::ESSID
+:*:fyi::FYI
+:*:iconapple::
+:*:iconarrowne::⤤
+:*:iconbullet::•
+:*:iconcheck::✔︎
+:*:iconcombcircle::⃝
+:*:icondfinger::☟
+:*:icongeq::≥
+:*:iconhighvoltage::⚡︎
+:*:iconinfinity::∞
+:*:iconleq::≤
+:*:iconlfinger::☜
+:*:iconneq::≠
+:*:iconohyou::ⓤ
+:*:iconrfinger::☞
+:*:iconsparkle::✧
+:*:icontimes::×
+:*:icontimesheavy::✖︎
+:*:iconufinger::☝
+:*:iconwarning::⚠︎
+:*:idk::IDK
+:*:imgfacepalm::http://galeri3.uludagsozluk.com/138/facepalm_227785.jpg
+:*:kaoflowercontent::(◡‿◡✿)
+:*:kaoflowerhearts::(✿ ♥‿♥)
+:*:kaoflowersmile::(◕ฺ‿◕ฺ✿ฺ)
+:*:kaolovecry::꒰˘̩̩̩⌣˘̩̩̩๑꒱♡
+:*:kaoshrug::¯\_(ツ)_/¯
+:*:kaotableflip::(╯°□°）╯︵ ┻━┻
+:*:keyalt::⎇
+:*:keybackspace::⌫
+:*:keycapslock::⇪
+:*:keycommand::⌘
+:*:keycontrol::⌃
+:*:keydelete::⌦
+:*:keyeject::⏏
+:*:keyend::↘
+:*:keyenter::⌤
+:*:keyescape::⎋
+:*:keyhome::↖
+:*:keyoption::⌥
+:*:keypgdown::⇟
+:*:keypgup::⇞
+:*:keyreturn::⏎
+:*:keyshift::⇧
+:*:keytab::⇥
+:*:ssid::SSID
+:*:tld::TLD
+:*:TM::™
+:*:wifi::Wi-Fi
